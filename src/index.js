@@ -20,51 +20,55 @@ function onSearch(event) {
 
   if (searchCountry) {
     fetchCountries(searchCountry)
-      .then(createMarkup)
+      .then(renderCountries)
       .catch(error => {
-        console.log(error);
         Notiflix.Notify.failure('Oops, there is no country with that name');
+        console.dir(error.message);
       });
   }
 }
 
-function createMarkup(value) {
-  if (value.length > 10) {
+function renderCountries(value) {
+  if (value.length > 1 && value.length <= 10) {
+    countryList(value);
+  } else if (value.length === 1) {
+    countryCard(value);
+  } else {
     Notiflix.Notify.info(
       'Too many matches found. Please enter a more specific name.'
     );
   }
+}
 
-  if (value.length > 1 && value.length <= 10) {
-    const markup = value
-      .map(
-        elem =>
-          `<li class="item">
+function countryList(value) {
+  const markup = value
+    .map(
+      elem =>
+        `<li class="item">
                 <img src="${elem.flags.svg}" width="20px">
                 <span>${elem.name.official}</span>
             </li>`
-      )
-      .join('');
+    )
+    .join('');
 
-    refs.countryList.insertAdjacentHTML('beforeend', markup);
-  }
+  refs.countryList.insertAdjacentHTML('beforeend', markup);
+}
 
-  if (value.length === 1) {
-    const markup = value
-      .map(
-        elem =>
-          `<div>
+function countryCard(value) {
+  const markup = value
+    .map(
+      elem =>
+        `<div>
                     <img src="${elem.flags.svg}" width="20px">
                     <span> ${elem.name.official} </span>
                     <p> Capital: ${elem.capital} </p>
                     <p> Population: ${elem.population} </p>
-                    <p> Languages: ${Object.values(elem.languages)
-                      .map(elem => elem)
-                      .join(', ')} </p>
+                    <p> Languages: ${Object.values(elem.languages).join(
+                      ', '
+                    )} </p>
                 </div>`
-      )
-      .join('');
+    )
+    .join('');
 
-    refs.countryInfo.insertAdjacentHTML('beforeend', markup);
-  }
+  refs.countryInfo.insertAdjacentHTML('beforeend', markup);
 }
